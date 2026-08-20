@@ -1,0 +1,21 @@
+# Sanal ortamlar
+venv/
+.venv/
+.venv-1/
+
+# Python
+__pycache__/
+*.pyc
+
+# Veri seti (boyut nedeniyle depoya dahil edilmedi -- README'deki indirme
+# talimatlarını izleyin)
+data/*
+!data/.gitkeep
+
+# Eğitilmiş model ağırlıkları (bazıları 500MB+, GitHub'a uygun değil)
+outputs/checkpoints/
+
+# Ham tahmin dosyaları (.npz) -- okunabilir özet tablolar (table5/6) izlenir
+outputs/predictions/
+
+.DS_Store
