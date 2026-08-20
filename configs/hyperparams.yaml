@@ -1,0 +1,94 @@
+# Ekinci et al. 2025 (Sensors 25, 1642) ile eşleşen konfigürasyon
+# "Classification of Mycena and Marasmius Species Using Deep Learning Models"
+
+seed: 42
+
+dataset:
+  # data/Classes altındaki GERÇEK klasör adları (indirdiğiniz Classes.7z'den).
+  # Not: arşivdeki ilk klasör "maramius oreades" olarak adlandırılmış (muhtemelen
+  # "marasmius" kelimesinde yazım hatası) -- kod klasör adını olduğu gibi kullanır,
+  # bu yüzden burada da aynen yazıldı.
+  class_names:
+    - "maramius oreades"
+    - "marasmius rotula"
+    - "mycena crocata"
+    - "mycena epipterygia"
+    - "mycena pura"
+    - "mycena rosea"
+    - "mycena seynii"
+  expected_counts:            # Table 4, makale
+    "maramius oreades": 222
+    "marasmius rotula": 228
+    "mycena crocata": 229
+    "mycena epipterygia": 243
+    "mycena pura": 220
+    "mycena rosea": 227
+    "mycena seynii": 213
+  image_size: 224
+  train_split: 0.70
+  test_split: 0.30
+
+augmentation:
+  horizontal_flip_p: 0.5
+  rotation_degrees: 15
+  color_jitter:
+    brightness: 0.1
+    contrast: 0.1
+    saturation: 0.1
+    hue: 0.05
+
+training:
+  optimizer: adam
+  lr_scheduler: step_lr
+  step_lr:
+    step_size: 7
+    gamma: 0.1
+  hyperparam_search:
+    method: random
+    n_trials: 3      # makalede 10'a kadar çıkabilir; CPU'da pratik olması için küçültüldü.
+                     # Daha kapsamlı arama isterseniz (GPU'nuz varsa) 10'a çıkarabilirsiniz.
+    quick_epochs: 2  # her deneme için hızlı ön-değerlendirme epoch sayısı
+    batch_size: [16, 32]  # 64 çıkarıldı: CPU'da büyük modellerde (EfficientNetV2-M,
+                          # MaxViT-S, Ensemble) bellek taşmasına yol açabiliyordu
+    learning_rate: [0.01, 0.001, 0.0001]
+    weight_decay: [0.001, 0.0001, 0.00001]
+  memory_safe_batch_size:   # 16GB RAM'li CPU makinelerde OOM/çökmeyi önlemek için
+    efficientnetv2_m: 8     # bu modeller batch_size'ı zorla küçültür
+    maxvit_s: 8
+    ensemble_maxvit_resnet: 4   # iki büyük modeli (MaxViT-S + ResNetV2-50) aynı anda taşıyor
+  epochs:
+    custom_cnn: 33          # early stopping ile
+    googlenet: 10
+    mobilenetv3_large: 10
+    vgg19: 20
+    resnetv2_50: 20
+    efficientnet_b0: 20
+    efficientnetv2_m: 20
+    maxvit_s: 20
+    ensemble_maxvit_resnet: 20
+  early_stopping:
+    patience: 5
+    monitor: val_loss
+
+som:
+  cnn_som:
+    grid_size: [20, 20]
+    sigma: 1.0
+    learning_rate: 0.5
+    iterations: 5000
+  maxvit_som:
+    grid_size: [10, 10]
+    sigma: 1.0
+    learning_rate: 0.5
+    iterations: 1000
+
+kan:
+  hidden_dim: 256
+  n_basis: 8   # sine tabanlı öğrenilebilir aktivasyon fonksiyonu sayısı
+
+ensemble:
+  feature_dims:
+    maxvit_s: 768
+    resnetv2_50: 2048
+  fc1: 512
+  dropout: 0.5
