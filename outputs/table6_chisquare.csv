@@ -1,0 +1,5 @@
+Model,googlenet,mobilenetv3_large,resnetv2_50,efficientnet_b0,efficientnetv2_m,vgg19,maxvit_s
+cnn_som,4.498e-50 (base),3.577e-51 (base),7.389e-53 (base),7.039e-43 (base),5.419e-49 (base),5.261e-54 (base),1.439e-57 (base)
+cnn_kan,1.206e-69 (base),7.331e-71 (base),1.022e-72 (base),1.398e-61 (base),1.909e-68 (base),5.634e-74 (base),7.392e-78 (base)
+maxvit_som,3.974e-02 (proposed),6.790e-02,1.423e-01,4.224e-04 (proposed),2.253e-02 (proposed),2.226e-01,6.687e-01
+ensemble_maxvit_resnet,1.041e-03 (proposed),2.238e-03 (proposed),6.721e-03 (proposed),2.743e-06 (proposed),4.729e-04 (proposed),1.350e-02 (proposed),8.946e-02
